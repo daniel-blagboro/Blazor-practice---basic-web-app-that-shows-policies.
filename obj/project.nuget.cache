@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "arm2Wh/orcc=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Daniel.Blagboro\\Canopius.PolicyDashboard.Blazor\\Canopius.PolicyDashboard.Blazor.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Daniel.Blagboro\\.nuget\\packages\\microsoft.aspnetcore.app.internal.assets\\10.0.12\\microsoft.aspnetcore.app.internal.assets.10.0.12.nupkg.sha512"
+  ],
+  "logs": []
+}

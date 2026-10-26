@@ -1,0 +1,101 @@
+@page "/policies"
+@rendermode InteractiveServer
+@using Canopius.PolicyDashboard.Blazor.Models
+@using System.Linq
+@using System.Collections.Generic
+@using Canopius.PolicyDashboard.Blazor.Services
+@inject PolicyService PolicyService
+
+<PageTitle>Policy Dashboard</PageTitle>
+
+<h1>Policy Dashboard</h1>
+
+<p>Welcome to the policy management dashboard.</p>
+
+<div class="summary-card">
+    <h2>Policy overview</h2>
+    <p>Active policies: @ActivePolicies</p>
+    <p>Pending policies: @PendingPolicies</p>
+</div>
+
+<button class="btn btn-primary" @onclick="RefreshPolicies">
+    Refresh overview
+</button>
+
+<label for="statusFilter">Filter by status:</label>
+<select id="statusFilter" @bind="selectedStatus">
+    <option value="All">All policies</option>
+    <option value="Active">Active</option>
+    <option value="Pending">Pending</option>
+</select>
+
+<label for="policySearch">Search policies:</label>
+<input id="policySearch" class="form-control mb-3" placeholder="Search reference or company..." @bind="searchTerm" />
+
+<h2>Policies</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Policy reference</th>
+            <th>Insured company</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var policy in FilteredPolicies)
+        {
+            <tr>
+                <td>@policy.PolicyReference</td>
+                <td>@policy.InsuredCompany</td>
+                <td>
+                    <span class="badge @(policy.Status == "Active"
+                          ? "bg-success"
+                          : "bg-warning text-dark")">
+                        @policy.Status
+                    </span>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<p>@statusMessage</p>
+
+@code {
+    private string searchTerm = "";
+
+    private int ActivePolicies =>
+        policies.Count(policy => policy.Status == "Active");
+
+    private int PendingPolicies =>
+        policies.Count(policy => policy.Status == "Pending");
+
+    private string statusMessage = "Dashboard loaded.";
+
+    private void RefreshPolicies()
+    {
+        statusMessage = "Policy overview refreshed.";
+    }
+
+    private List<Policy> policies = new();
+
+    protected override void OnInitialized()
+    {
+        policies = PolicyService.GetPolicies();
+    }
+
+    private string selectedStatus = "All";
+
+    private IEnumerable<Policy> FilteredPolicies =>
+        policies.Where(policy =>
+            (selectedStatus == "All" ||
+             policy.Status == selectedStatus) &&
+            (string.IsNullOrWhiteSpace(searchTerm) ||
+             policy.PolicyReference.Contains(
+                 searchTerm.Trim(),
+                 StringComparison.OrdinalIgnoreCase) ||
+             policy.InsuredCompany.Contains(
+                 searchTerm.Trim(),
+                 StringComparison.OrdinalIgnoreCase)));
+}
